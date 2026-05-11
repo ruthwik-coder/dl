@@ -18,12 +18,19 @@ import matplotlib.pyplot as plt
 plt.imshow(x_train[777])
 plt.title(cifar_10_classes[y_train[777][0]])
 plt.axis("off")
+
 x_train = x_train/255.0
 x_test = x_test/255.0
 
 one_hot_encoder = OneHotEncoder()
 y_train = one_hot_encoder.fit_transform(y_train).toarray()
 y_test = one_hot_encoder.fit_transform(y_test).toarray()
+
+softmax_model = tf.keras.models.Sequential([tf.keras.layers.Flatten(input_shape=(32,32,3)), tf.keras.layers.Dense(10, activation = 'softmax')])
+softmax_model.compile(optimizer = 'adam', loss = 'categorical_crossentropy', metrics = ['accuracy'])
+softmax_model.fit(x_train, y_train, epochs = 20, batch_size = 20, validation_data = (x_test, y_test))
+
+
 new_image = x_test[10]
 plt.imshow(new_image)
 plt.axis("off")
@@ -33,6 +40,7 @@ print(img.shape)
 pred = softmax_model.predict(img)
 prediction =  np.argmax(pred)
 cifar_10_classes[prediction]
+
 from sklearn.metrics import classification_report, confusion_matrix
 import seaborn as sns
 
@@ -56,6 +64,4 @@ sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=cifar_10_classes,
 plt.xlabel('Predicted')
 plt.ylabel('True')
 plt.show()
-softmax_model = tf.keras.models.Sequential([tf.keras.layers.Flatten(input_shape=(32,32,3)), tf.keras.layers.Dense(10, activation = 'softmax')])
-softmax_model.compile(optimizer = 'adam', loss = 'categorical_crossentropy', metrics = ['accuracy'])
-softmax_model.fit(x_train, y_train, epochs = 20, batch_size = 20, validation_data = (x_test, y_test))
+
